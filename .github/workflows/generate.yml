@@ -74,8 +74,11 @@ jobs:
         with:
           name: json-rpc-api-schema
           path: ${{ steps.check_file.outputs.file_path }}
-          retention-days: 30
 
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+      file_exists: ${{ steps.check_file.outputs.file_exists }}
+      
   deploy-docs:
     needs: generate-schema
     if: needs.generate-schema.outputs.file_exists == 'true'  # Besser: Nur wenn Datei existiert
