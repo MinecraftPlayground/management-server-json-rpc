@@ -47,6 +47,7 @@ jobs:
         run: |
           if [ -f "generated/reports/json-rpc-api-schema.json" ]; then
             echo "file_exists=true" >> $GITHUB_OUTPUT
+            echo "file_path=$FILE_PATH" >> $GITHUB_OUTPUT
             echo "File found!"
           else
             echo "File not found! (Möglicherweise nicht verfügbar in dieser Version)"
