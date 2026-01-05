@@ -54,9 +54,11 @@ jobs:
             exit 1
           fi
 
-      - name: 'Upload json-rpc-api-schema.json as artifact'
+      - name: Write JSON content to Job Summary
         if: steps.check_file.outputs.file_exists == 'true'
-        uses: actions/upload-artifact@v4
-        with:
-          name: json-rpc-api-schema-${{ steps.version.outputs.version }}
-          path: generated/reports/json-rpc-api-schema.json
+        run: |
+          echo "### Generiertes JSON-RPC API Schema für Minecraft ${{ steps.version.outputs.version }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "\`\`\`json" >> $GITHUB_STEP_SUMMARY
+          cat "${{ steps.check_file.outputs.file_path }}" >> $GITHUB_STEP_SUMMARY
+          echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
