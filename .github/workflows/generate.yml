@@ -62,23 +62,21 @@ jobs:
 
       - name: 'Update README schema section'
         run: |
-          SCHEMA_CONTENT=$(cat ./json-rpc-api-schema.json)
-
-          awk -v schema="$SCHEMA_CONTENT" '
+          awk '
             BEGIN { in_block=0 }
             /<!-- SCHEMA-->/ {
-              print
+              print "<!-- SCHEMA-->"
               print "```json"
-              print schema
-              print
+              while ((getline line < "json-rpc-api-schema.json") > 0)
+                print line
+              close("json-rpc-api-schema.json")
               print "```"
-              print
               in_block=1
               next
             }
             /<!-- \/SCHEMA-->/ {
               in_block=0
-              print
+              print "<!-- /SCHEMA-->"
               next
             }
             !in_block { print }
