@@ -94,41 +94,10 @@ jobs:
 
       - name: Generate interactive OpenRPC documentation
         run: |
+          npm install -g @open-rpc/generator
           mkdir -p docs
           
-          SCHEMA_JSON=$(cat schema/json-rpc-api-schema.json | jq -c .)
-          
-          cat << EOF > docs/index.html
-          <!DOCTYPE html>
-          <html lang="de">
-          <head>
-            <meta charset="utf-8">
-            <title>Minecraft Server Management Protocol (JSON-RPC) – ${{ env.MC_VERSION }}</title>
-            <meta name="viewport" content="width=device-width, initial-scale=1">
-            <style>
-              body { margin: 0; padding: 0; height: 100vh; }
-              #playground { height: 100vh; }
-            </style>
-          </head>
-          <body>
-            <div id="playground"></div>
-            <script type="module">
-              import { Playground } from "https://cdn.jsdelivr.net/npm/@open-rpc/playground@latest/dist/playground.esm.js";
-              
-              const schema = $SCHEMA_JSON;
-              
-              Playground(document.getElementById("playground"), {
-                schema,
-                ui: {
-                  theme: "dark",
-                  hideDarkModeToggle: false,
-                  hideDownloadButton: false
-                }
-              });
-            </script>
-          </body>
-          </html>
-          EOF
+          open-rpc-generator generate -d ./schema/json-rpc-api-schema.json -o ./docs
 
       - name: Upload to GitHub Pages
         uses: actions/upload-pages-artifact@v3
