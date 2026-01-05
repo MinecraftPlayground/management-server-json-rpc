@@ -1,0 +1,62 @@
+name: Generate Minecraft JSON-RPC API Schema
+
+on:
+  workflow_dispatch:  # Manuell auslösbar
+    inputs:
+      minecraft_version:
+        description: 'Minecraft Version (z.B. 1.21.3 oder latest)'
+        required: true
+        default: 'latest'
+
+jobs:
+  generate-schema:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: 'Setup Java (Java 21 für aktuelle Versionen)'
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+
+      - name: 'Determine Minecraft version'
+        id: version
+        run: |
+          if [[ "${{ inputs.minecraft_version }}" == "latest" ]]; then
+            VERSION=$(curl -s https://piston-meta.mojang.com/mc/game/version_manifest_v2.json | jq -r '.latest.release')
+          else
+            VERSION="${{ inputs.minecraft_version }}"
+          fi
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+
+      - name: 'Download Minecraft server.jar'
+        run: |
+          MANIFEST_URL=$(curl -s https://piston-meta.mojang.com/mc/game/version_manifest_v2.json | jq -r --arg v "${{ steps.version.outputs.version }}" '.versions[] | select(.id == $v) | .url')
+          DOWNLOAD_URL=$(curl -s "$MANIFEST_URL" | jq -r '.downloads.server.url')
+          curl -o server.jar "$DOWNLOAD_URL"
+          echo "Downloaded server.jar for version ${{ steps.version.outputs.version }}"
+
+      - name: 'Run Data Generator (--reports)'
+        run: |
+          java -DbundlerMainClass=net.minecraft.data.Main -jar server.jar --reports
+
+      - name: 'Check if json-rpc-api-schema.json exists'
+        id: check_file
+        run: |
+          if [ -f "generated/reports/json-rpc-api-schema.json" ]; then
+            echo "file_exists=true" >> $GITHUB_OUTPUT
+            echo "File found!"
+          else
+            echo "File not found! (Möglicherweise nicht verfügbar in dieser Version)"
+            echo "file_exists=false" >> $GITHUB_OUTPUT
+            exit 1
+          fi
+
+      - name: 'Upload json-rpc-api-schema.json as artifact'
+        if: steps.check_file.outputs.file_exists == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: json-rpc-api-schema-${{ steps.version.outputs.version }}
+          path: generated/reports/json-rpc-api-schema.json
