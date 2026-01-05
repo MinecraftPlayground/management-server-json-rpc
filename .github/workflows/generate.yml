@@ -15,6 +15,11 @@ jobs:
       - name: 'Checkout repository'
         uses: actions/checkout@v4
 
+      - name: 'Configure git'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
       - name: 'Setup Java (Java 21)'
         uses: actions/setup-java@v4
         with:
@@ -51,3 +56,39 @@ jobs:
         with:
           name: 'json-rpc-api-schema'
           path: './json-rpc-api-schema.json'
+
+      - name: 'Update README schema section'
+        run: |
+          SCHEMA_CONTENT=$(cat ./json-rpc-api-schema.json)
+
+          awk -v schema="$SCHEMA_CONTENT" '
+            BEGIN { in_block=0 }
+            /<!-- SCHEMA-->/ {
+              print
+              print "```json"
+              print schema
+              print
+              print "```"
+              print
+              in_block=1
+              next
+            }
+            /<!-- \/SCHEMA-->/ {
+              in_block=0
+              print
+              next
+            }
+            !in_block { print }
+          ' README.md > README.tmp
+
+          mv README.tmp README.md
+
+      - name: 'Commit README update'
+        run: |
+          git add README.md
+          if git diff --cached --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "Update JSON-RPC API schema in README"
+            git push
+          fi
