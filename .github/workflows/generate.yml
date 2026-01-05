@@ -122,6 +122,8 @@ jobs:
           EOF
 
       - name: Build OpenRPC Playground
+        env:
+          NODE_OPTIONS: --openssl-legacy-provider
         run: |
           cd playground
           PUBLIC_URL=/${{ github.event.repository.name }}/${DOC_PATH} npm run build
