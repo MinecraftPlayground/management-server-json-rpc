@@ -77,51 +77,51 @@ jobs:
           retention-days: 30
 
   deploy-docs:
-    needs: generate-schema  # Nur ausführen, wenn Schema erfolgreich generiert wurde
-    if: needs.generate-schema.result == 'success'  # Optional: Nur bei Success
+    needs: generate-schema
+    if: needs.generate-schema.outputs.file_exists == 'true'  # Besser: Nur wenn Datei existiert
     runs-on: ubuntu-latest
     permissions:
-      pages: write      # Für GitHub Pages Deploy
-      id-token: write   # Für Verifikation
+      pages: write
+      id-token: write
+    env:
+      MC_VERSION: ${{ needs.generate-schema.outputs.version || 'latest' }}  # Version weitergeben (siehe unten)
     steps:
       - name: Download artifact
         uses: actions/download-artifact@v4
         with:
-          name: json-rpc-api-schema  # Passe an, falls version nicht durchgereicht
-          path: schema
+          name: json-rpc-api-schema
+          path: schema/
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-
-      - name: Install OpenRPC Playground
-        run: npm install @open-rpc/playground
-
-      - name: Generate standalone docs HTML
+      - name: Create docs directory and generate index.html
         run: |
-          # Lade das JSON
-          SCHEMA=$(cat schema/json-rpc-api-schema.json | jq -c .)
+          mkdir -p docs
           
-          # Erstelle eine standalone index.html mit eingebettetem Schema
+          # Lade das kompakte JSON (für Einbettung)
+          SCHEMA_JSON=$(cat schema/json-rpc-api-schema.json | jq -c .)
+          
           cat << EOF > docs/index.html
           <!DOCTYPE html>
           <html lang="de">
           <head>
             <meta charset="utf-8">
-            <title>Minecraft JSON-RPC API Docs - ${{ needs.generate-schema.outputs.version || 'latest' }}</title>
+            <title>Minecraft Server Management Protocol (JSON-RPC) API – Version ${{ env.MC_VERSION }}</title>
             <meta name="viewport" content="width=device-width, initial-scale=1">
-            <style>body { margin:0; padding:0; }</style>
+            <style>
+              body { margin: 0; padding: 0; height: 100vh; }
+              #playground { height: 100vh; }
+            </style>
           </head>
           <body>
             <div id="playground"></div>
             <script type="module">
               import { Playground } from "https://cdn.jsdelivr.net/npm/@open-rpc/playground@latest/dist/playground.esm.js";
-              const schema = $SCHEMA;
+              
+              const openRpcSchema = $SCHEMA_JSON;
+              
               Playground(document.getElementById("playground"), {
-                schema: schema,
+                schema: openRpcSchema,
                 ui: {
-                  theme: "dark",  // oder "light"
+                  theme: "dark",                  // oder "light"
                   hideDarkModeToggle: false,
                   hideDownloadButton: false
                 }
@@ -130,8 +130,6 @@ jobs:
           </body>
           </html>
           EOF
-          
-          mkdir -p docs
 
       - name: Upload GitHub Pages artifact
         uses: actions/upload-pages-artifact@v3
