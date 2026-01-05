@@ -1,1 +1,5 @@
-# management-server-json-rpc
+# Management Server (`json-rpc-api-schema.json`)
+
+<!-- SCHEMA-->
+
+<!-- /SCHEMA-->
