@@ -1,0 +1,13 @@
+{
+  "name": "management-server-json-rpc",
+  "version": "1.0.0",
+  "dependencies": {
+    "react": "^18",
+    "react-dom": "^18",
+    "@open-rpc/docs-react": "^2.1.1"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build"
+  }
+}
