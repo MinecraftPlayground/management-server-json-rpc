@@ -31,9 +31,10 @@ jobs:
           java-version: ${{ steps.manifest.outputs.java-version }}
         
       - name: 'Download Minecraft server.jar'
+        id: 'download-server-jar'
         run: |
           curl -o server.jar "${{ steps.manifest.outputs.server-download-url }}"
-          echo "Downloaded server.jar for version ${{ github.event.inputs.version }}"
+          echo "Downloaded server.jar for version ${{ steps.manifest.outputs.version }}"
 
       - name: 'Run Data Generator (--reports)'
         run: |
@@ -42,7 +43,7 @@ jobs:
 
       - name: 'Write JSON content to Job Summary'
         run: |
-          echo "# Generated JSON-RPC API Schema for Minecraft ${{ github.event.inputs.version }}" >> $GITHUB_STEP_SUMMARY
+          echo "# Generated JSON-RPC API Schema for Minecraft ${{ steps.manifest.outputs.version }}" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "\`\`\`json" >> $GITHUB_STEP_SUMMARY
           cat "./json-rpc-api-schema.json" >> $GITHUB_STEP_SUMMARY
