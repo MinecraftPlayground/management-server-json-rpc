@@ -18,17 +18,17 @@ jobs:
       - name: 'Checkout repository'
         uses: actions/checkout@v4
 
-      - name: 'Setup Java (Java 21)'
-        uses: actions/setup-java@v4
-        with:
-          distribution: 'temurin'
-          java-version: '21'
-
       - name: 'Get manifest information'
         id: 'manifest'
         uses: MinecraftPlayground/manifest@main
         with:
           version: ${{ github.event.inputs.version }}
+
+      - name: 'Setup Java (required by Minecraft)'
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: ${{ steps.manifest.outputs.java-version }}
         
       - name: 'Download Minecraft server.jar'
         run: |
