@@ -8,6 +8,9 @@ on:
         required: true
         default: 'latest-snapshot'
 
+permissions:
+  contents: write
+
 jobs:
   generate-schema:
     runs-on: ubuntu-latest
