@@ -1,4 +1,4 @@
-name: Generate JSON-RPC API Schema
+name: Generate JSON-RPC API Schema & Documentation
 
 on:
   workflow_dispatch:
@@ -7,12 +7,13 @@ on:
         description: 'Minecraft Version (z.B. 1.21.3 oder latest)'
         required: true
         default: 'latest'
-  schedule:
-    - cron: '0 0 * * *'  # Optional: täglich für latest
 
 jobs:
   generate-schema:
     runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+      file_exists: ${{ steps.check_file.outputs.file_exists }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -53,9 +54,8 @@ jobs:
             echo "file_path=$FILE_PATH" >> $GITHUB_OUTPUT
             echo "File found!"
           else
-            echo "File not found! (Nur in Versionen ab ca. 1.21.9 / Snapshot 25w35a verfügbar)"
             echo "file_exists=false" >> $GITHUB_OUTPUT
-            exit 1
+            echo "File not found! (Nur in neueren Snapshots/Pre-Releases verfügbar)"
           fi
 
       - name: Write JSON content to Job Summary
@@ -65,41 +65,37 @@ jobs:
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "\`\`\`json" >> $GITHUB_STEP_SUMMARY
           cat "${{ steps.check_file.outputs.file_path }}" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
           echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
 
       - name: Upload json-rpc-api-schema.json as artifact
         if: steps.check_file.outputs.file_exists == 'true'
         uses: actions/upload-artifact@v4
         with:
-          name: json-rpc-api-schema
+          name: json-rpc-api-schema-${{ steps.version.outputs.version }}
           path: ${{ steps.check_file.outputs.file_path }}
+          retention-days: 30
 
-    outputs:
-      version: ${{ steps.version.outputs.version }}
-      file_exists: ${{ steps.check_file.outputs.file_exists }}
-      
   deploy-docs:
     needs: generate-schema
-    if: needs.generate-schema.outputs.file_exists == 'true'  # Besser: Nur wenn Datei existiert
+    if: needs.generate-schema.outputs.file_exists == 'true'
     runs-on: ubuntu-latest
     permissions:
       pages: write
       id-token: write
     env:
-      MC_VERSION: ${{ needs.generate-schema.outputs.version || 'latest' }}  # Version weitergeben (siehe unten)
+      MC_VERSION: ${{ needs.generate-schema.outputs.version }}
     steps:
       - name: Download artifact
         uses: actions/download-artifact@v4
         with:
-          name: json-rpc-api-schema
-          path: schema/
+          name: json-rpc-api-schema-${{ env.MC_VERSION }}
+          path: schema
 
-      - name: Create docs directory and generate index.html
+      - name: Generate standalone OpenRPC Playground HTML
         run: |
           mkdir -p docs
           
-          # Lade das kompakte JSON (für Einbettung)
+          # Kompaktes JSON einlesen (für sicheres Einbetten in JS)
           SCHEMA_JSON=$(cat schema/json-rpc-api-schema.json | jq -c .)
           
           cat << EOF > docs/index.html
@@ -107,11 +103,11 @@ jobs:
           <html lang="de">
           <head>
             <meta charset="utf-8">
-            <title>Minecraft Server Management Protocol (JSON-RPC) API – Version ${{ env.MC_VERSION }}</title>
+            <title>Minecraft Server Management Protocol (JSON-RPC) – Version ${{ env.MC_VERSION }}</title>
             <meta name="viewport" content="width=device-width, initial-scale=1">
             <style>
-              body { margin: 0; padding: 0; height: 100vh; }
-              #playground { height: 100vh; }
+              body { margin: 0; padding: 0; height: 100vh; overflow: hidden; }
+              #playground { height: 100vh; width: 100vw; }
             </style>
           </head>
           <body>
@@ -124,9 +120,11 @@ jobs:
               Playground(document.getElementById("playground"), {
                 schema: openRpcSchema,
                 ui: {
-                  theme: "dark",                  // oder "light"
+                  theme: "dark",  // "light" für helles Theme
                   hideDarkModeToggle: false,
-                  hideDownloadButton: false
+                  hideDownloadButton: false,
+                  // Optional: Default-Server-URL für Try-it-out (z. B. ws://localhost:9000)
+                  // serverUrl: "ws://localhost:9000"
                 }
               });
             </script>
@@ -141,3 +139,8 @@ jobs:
 
       - name: Deploy to GitHub Pages
         uses: actions/deploy-pages@v4
+
+      - name: Add Playground Link to Summary
+        run: |
+          echo "### 🚀 Interaktive Dokumentation deployed!" >> $GITHUB_STEP_SUMMARY
+          echo "Die Docs sind live unter: https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/" >> $GITHUB_STEP_SUMMARY
