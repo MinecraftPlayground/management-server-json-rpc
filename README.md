@@ -161,10 +161,7 @@
             "type": "string"
           },
           "value": {
-            "type": [
-              "boolean",
-              "integer"
-            ]
+            "type": "string"
           }
         }
       },
@@ -175,10 +172,7 @@
             "type": "string"
           },
           "value": {
-            "type": [
-              "boolean",
-              "integer"
-            ]
+            "type": "string"
           }
         }
       },
@@ -214,7 +208,7 @@
   },
   "info": {
     "title": "Minecraft Server JSON-RPC",
-    "version": "2.0.0"
+    "version": "1.0.0"
   },
   "methods": [
     {
@@ -1379,11 +1373,6 @@
     {
       "description": "Server save completed",
       "name": "minecraft:notification/server/saved",
-      "params": []
-    },
-    {
-      "description": "Server activity occurred. Rate limited to 1 notification per 30 seconds",
-      "name": "minecraft:notification/server/activity",
       "params": []
     },
     {
