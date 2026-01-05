@@ -92,21 +92,50 @@ jobs:
           name: json-rpc-api-schema-${{ env.MC_VERSION }}
           path: schema
 
-      - name: Generate standalone OpenRPC Playground HTML
+      - name: Generate interactive OpenRPC documentation
         run: |
           mkdir -p docs
-
-          npm install -g jrgen
-          jrgen docs-html schema/json-rpc-api-schema.json --outdir ./docs
-          mv ./docs/*.html ./docs/index.html
           
+          SCHEMA_JSON=$(cat schema/json-rpc-api-schema.json | jq -c .)
+          
+          cat << EOF > docs/index.html
+          <!DOCTYPE html>
+          <html lang="de">
+          <head>
+            <meta charset="utf-8">
+            <title>Minecraft Server Management Protocol (JSON-RPC) – ${{ env.MC_VERSION }}</title>
+            <meta name="viewport" content="width=device-width, initial-scale=1">
+            <style>
+              body { margin: 0; padding: 0; height: 100vh; }
+              #playground { height: 100vh; }
+            </style>
+          </head>
+          <body>
+            <div id="playground"></div>
+            <script type="module">
+              import { Playground } from "https://cdn.jsdelivr.net/npm/@open-rpc/playground@latest/dist/playground.esm.js";
+              
+              const schema = $SCHEMA_JSON;
+              
+              Playground(document.getElementById("playground"), {
+                schema,
+                ui: {
+                  theme: "dark",
+                  hideDarkModeToggle: false,
+                  hideDownloadButton: false
+                }
+              });
+            </script>
+          </body>
+          </html>
+          EOF
 
-      - name: Upload GitHub Pages artifact
+      - name: Upload to GitHub Pages
         uses: actions/upload-pages-artifact@v3
         with:
           path: docs/
 
-      - name: Deploy to GitHub Pages
+      - name: Deploy
         uses: actions/deploy-pages@v4
 
       - name: Add Playground Link to Summary
