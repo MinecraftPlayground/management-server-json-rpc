@@ -94,43 +94,10 @@ jobs:
       - name: Generate standalone OpenRPC Playground HTML
         run: |
           mkdir -p docs
+
+          npm install -g jrgen
+          jrgen docs-html schema/json-rpc-api-schema.json --outdir ./docs
           
-          # Kompaktes JSON einlesen (für sicheres Einbetten in JS)
-          SCHEMA_JSON=$(cat schema/json-rpc-api-schema.json | jq -c .)
-          
-          cat << EOF > docs/index.html
-          <!DOCTYPE html>
-          <html lang="de">
-          <head>
-            <meta charset="utf-8">
-            <title>Minecraft Server Management Protocol (JSON-RPC) – Version ${{ env.MC_VERSION }}</title>
-            <meta name="viewport" content="width=device-width, initial-scale=1">
-            <style>
-              body { margin: 0; padding: 0; height: 100vh; overflow: hidden; }
-              #playground { height: 100vh; width: 100vw; }
-            </style>
-          </head>
-          <body>
-            <div id="playground"></div>
-            <script type="module">
-              import { Playground } from "https://cdn.jsdelivr.net/npm/@open-rpc/playground@latest/dist/playground.esm.js";
-              
-              const openRpcSchema = $SCHEMA_JSON;
-              
-              Playground(document.getElementById("playground"), {
-                schema: openRpcSchema,
-                ui: {
-                  theme: "dark",  // "light" für helles Theme
-                  hideDarkModeToggle: false,
-                  hideDownloadButton: false,
-                  // Optional: Default-Server-URL für Try-it-out (z. B. ws://localhost:9000)
-                  // serverUrl: "ws://localhost:9000"
-                }
-              });
-            </script>
-          </body>
-          </html>
-          EOF
 
       - name: Upload GitHub Pages artifact
         uses: actions/upload-pages-artifact@v3
