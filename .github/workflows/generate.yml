@@ -98,6 +98,7 @@ jobs:
 
           npm install -g jrgen
           jrgen docs-html schema/json-rpc-api-schema.json --outdir ./docs
+          rename ./docs/*.html ./docs/index.html
           
 
       - name: Upload GitHub Pages artifact
