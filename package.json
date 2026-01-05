@@ -1,6 +1,7 @@
 {
   "name": "management-server-json-rpc",
   "version": "1.0.0",
+  "homepage": "https://minecraftplayground.github.io/management-server-json-rpc",
   "dependencies": {
     "react": "^18",
     "react-dom": "^18",
