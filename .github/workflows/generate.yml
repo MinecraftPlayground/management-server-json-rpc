@@ -90,9 +90,11 @@ jobs:
           # <version>
           mkdir -p pages/$VERSION
           cp -r dist/* pages/$VERSION/
+          cp -r src/schema.json pages/$VERSION/schema.json
 
           # root
           cp -r dist/* pages/
+          cp -r src/schema.json pages/schema.json
 
       - name: 'Upload pages artifact'
         uses: actions/upload-pages-artifact@v3
