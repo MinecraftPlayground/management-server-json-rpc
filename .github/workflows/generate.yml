@@ -70,4 +70,4 @@ jobs:
 
       - name: list
         run: |
-          ls json-rpc-api-schema
+          ls
