@@ -46,6 +46,7 @@ jobs:
       - name: 'Write JSON content to Job Summary'
         run: |
           echo "# Generated JSON-RPC API Schema for Minecraft ${{ steps.manifest.outputs.version }}" >> $GITHUB_STEP_SUMMARY
+          echo "https://minecraftplayground.github.io/management-server-json-rpc/${{ steps.manifest.outputs.version }}" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "\`\`\`json" >> $GITHUB_STEP_SUMMARY
           cat "./schema.json" >> $GITHUB_STEP_SUMMARY
