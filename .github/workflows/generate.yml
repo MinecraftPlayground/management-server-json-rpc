@@ -71,4 +71,4 @@ jobs:
 
       - name: list
         run: |
-          ls src
+          cat ./src/schema.json
