@@ -9,7 +9,9 @@ on:
         default: 'latest-snapshot'
 
 permissions:
-  contents: write
+  contents: read
+  pages: write
+  id-token: write
 
 jobs:
   generate-schema:
@@ -56,19 +58,45 @@ jobs:
           name: 'json-rpc-api-schema'
           path: './schema.json'
 
+    outputs:
+      VERSION: ${{ steps.manifest.outputs.version }}
+
   publish-page:
     needs: ['generate-schema']
     runs-on: ubuntu-latest
+    env:
+      VERSION: ${{ needs.generate-schema.outputs.VERSION }}
+
     steps:
       - name: 'Checkout repository'
         uses: actions/checkout@v4
-
-      - name: Download a Build Artifact
+        
+      - name: 'Setup Deno'
+        uses: denoland/setup-deno@v2
+        
+      - name: 'Download schema artifact'
         uses: actions/download-artifact@v7.0.0
         with:
           name: 'json-rpc-api-schema'
           path: 'src'
 
-      - name: list
+      - name: 'Build page'
         run: |
-          cat ./src/schema.json
+          deno task build
+      
+      - name: 'Prepare versioned pages directory'
+        run: |
+          # root
+          cp -r dist/* pages/
+
+          # <version>
+          mkdir -p pages/$VERSION
+          cp -r dist/* pages/$VERSION/
+
+      - name: 'Upload pages artifact'
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: 'pages'
+
+      - name: 'Deploy to GitHub Pages'
+        uses: actions/deploy-pages@v4
