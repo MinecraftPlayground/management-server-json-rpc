@@ -67,7 +67,8 @@ jobs:
         uses: actions/download-artifact@v7.0.0
         with:
           name: 'json-rpc-api-schema'
+          path: 'src'
 
       - name: list
         run: |
-          ls
+          ls src
