@@ -39,14 +39,14 @@ jobs:
       - name: 'Run Data Generator (--reports)'
         run: |
           java -DbundlerMainClass=net.minecraft.data.Main -jar server.jar --reports
-          mv './generated/reports/json-rpc-api-schema.json' './json-rpc-api-schema.json'
+          mv './generated/reports/json-rpc-api-schema.json' './schema.json'
 
       - name: 'Write JSON content to Job Summary'
         run: |
           echo "# Generated JSON-RPC API Schema for Minecraft ${{ steps.manifest.outputs.version }}" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "\`\`\`json" >> $GITHUB_STEP_SUMMARY
-          cat "./json-rpc-api-schema.json" >> $GITHUB_STEP_SUMMARY
+          cat "./schema.json" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
 
@@ -54,7 +54,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: 'json-rpc-api-schema'
-          path: './json-rpc-api-schema.json'
+          path: './schema.json'
 
   publish-page:
     needs: ['generate-schema']
