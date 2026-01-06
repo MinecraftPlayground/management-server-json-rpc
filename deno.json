@@ -1,4 +1,7 @@
 {
+  "tasks": {
+    "build": "deno bundle --outdir dist src/index.html"
+  },
   "compilerOptions": {
     "module": "esnext",
     "types": [
