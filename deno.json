@@ -1,0 +1,23 @@
+{
+  "compilerOptions": {
+    "module": "esnext",
+    "types": [
+      "react",
+      "react-dom",
+      "@types/react"
+    ],
+    "lib": [
+      "dom",
+      "dom.iterable",
+      "esnext"
+    ],
+    "jsx": "react-jsx",
+    "jsxImportSource": "react"
+  },
+  "imports": {
+    "@open-rpc/docs-react": "npm:@open-rpc/docs-react@^2.1.1",
+    "@types/react": "npm:@types/react@^17.0.90",
+    "react": "npm:react@^17.0.2",
+    "react-dom": "npm:react-dom@^17.0.2"
+  }
+}
