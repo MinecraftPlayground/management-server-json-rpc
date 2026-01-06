@@ -55,3 +55,19 @@ jobs:
         with:
           name: 'json-rpc-api-schema'
           path: './json-rpc-api-schema.json'
+
+  publish-page:
+    needs: ['generate-schema']
+    runs-on: ubuntu-latest
+    steps:
+      - name: 'Checkout repository'
+        uses: actions/checkout@v4
+
+      - name: Download a Build Artifact
+        uses: actions/download-artifact@v7.0.0
+        with:
+          name: 'json-rpc-api-schema'
+
+      - name: list
+        run: |
+          ls json-rpc-api-schema
