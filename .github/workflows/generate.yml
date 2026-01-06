@@ -86,12 +86,12 @@ jobs:
       
       - name: 'Prepare versioned pages directory'
         run: |
-          # root
-          cp -r dist/* pages/
-
           # <version>
           mkdir -p pages/$VERSION
           cp -r dist/* pages/$VERSION/
+
+          # root
+          cp -r dist/* pages/
 
       - name: 'Upload pages artifact'
         uses: actions/upload-pages-artifact@v3
