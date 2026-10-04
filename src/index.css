@@ -1,14 +1,1438 @@
-*,
-*::before,
-*::after {
-  margin: 0;
-  padding: 0;
+:root {
+  --bg: #ffffff;
+  --surface: #ffffff;
+  --surface-subtle: #f8f9fb;
+  --surface-muted: #f3f4f6;
+
+  --line: #e5e7eb;
+  --line-strong: #d1d5db;
+
+  --text: #111827;
+  --text-soft: #374151;
+  --muted: #6b7280;
+
+  --link: #2563eb;
+  --link-hover: #1d4ed8;
+
+  --type: #7c3aed;
+  --type-bg: #f5f3ff;
+
+  --ref: #0369a1;
+  --ref-bg: #f0f9ff;
+
+  --required: #b91c1c;
+  --required-bg: #fef2f2;
+
+  --code-bg: #f3f4f6;
+
+  --sidebar-width: 290px;
+  --header-height: 64px;
+
+  --radius-sm: 3px;
+  --radius-md: 6px;
+  --radius-lg: 8px;
+
+  --shadow-card:
+    0 1px 2px rgba(16, 24, 40, 0.04),
+    0 1px 3px rgba(16, 24, 40, 0.06);
+
+  color-scheme: light;
+}
+
+/* =========================================================
+   Dark mode
+   ========================================================= */
+
+:root[data-theme="dark"] {
+  --bg: #0f1115;
+  --surface: #15181d;
+  --surface-subtle: #1b1f26;
+  --surface-muted: #22262e;
+
+  --line: #292e37;
+  --line-strong: #3a414c;
+
+  --text: #f3f4f6;
+  --text-soft: #c7ccd4;
+  --muted: #8d95a3;
+
+  --link: #60a5fa;
+  --link-hover: #93c5fd;
+
+  --type: #c4b5fd;
+  --type-bg: #241f36;
+
+  --ref: #67c5f5;
+  --ref-bg: #122b39;
+
+  --required: #fca5a5;
+  --required-bg: #3a1e21;
+
+  --code-bg: #20242b;
+
+  --shadow-card:
+    0 1px 2px rgba(0, 0, 0, 0.2),
+    0 2px 8px rgba(0, 0, 0, 0.16);
+
+  color-scheme: dark;
+}
+
+/* =========================================================
+   Base
+   ========================================================= */
+
+* {
   box-sizing: border-box;
-  font-family: 'Helvetica';
+}
+
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: calc(var(--header-height) + 24px);
 }
 
 body {
+  margin: 0;
+
+  background: var(--bg);
+  color: var(--text);
+
+  font-family:
+    Inter,
+    ui-sans-serif,
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    sans-serif;
+
+  font-size: 14px;
+  line-height: 1.6;
+
+  transition:
+    background-color 160ms ease,
+    color 160ms ease;
+}
+
+button,
+a {
+  font: inherit;
+}
+
+a {
+  color: inherit;
+}
+
+code,
+pre {
+  font-family:
+    "SFMono-Regular",
+    "Cascadia Code",
+    "Roboto Mono",
+    Consolas,
+    monospace;
+}
+
+/* =========================================================
+   Header
+   ========================================================= */
+
+.site-header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+
+  height: var(--header-height);
+
+  background: color-mix(
+    in srgb,
+    var(--surface) 94%,
+    transparent
+  );
+
+  border-bottom: 1px solid var(--line);
+
+  backdrop-filter: blur(12px);
+}
+
+.header-inner {
+  width: min(1480px, calc(100% - 40px));
+  height: 100%;
+
+  margin: 0 auto;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 11px;
+
+  color: inherit;
+  text-decoration: none;
+}
+
+.brand-mark {
   display: grid;
   place-items: center;
-  padding: 20px;
+
+  width: 34px;
+  height: 34px;
+
+  border: 1px solid var(--line);
+  border-radius: 5px;
+
+  background: var(--text);
+  color: var(--bg);
+
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+}
+
+.brand-text {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.2;
+}
+
+#title {
+  font-size: 14px;
+  font-weight: 650;
+}
+
+.subtitle {
+  margin-top: 3px;
+
+  color: var(--muted);
+
+  font-size: 11px;
+  font-weight: 450;
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.header-label {
+  color: var(--muted);
+
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.theme-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+
+  height: 30px;
+  padding: 0 9px;
+
+  border: 1px solid var(--line);
+  border-radius: 5px;
+
+  background: var(--surface-subtle);
+  color: var(--text-soft);
+
+  cursor: pointer;
+
+  font-size: 11px;
+  font-weight: 600;
+
+  transition:
+    background-color 120ms ease,
+    border-color 120ms ease,
+    color 120ms ease;
+}
+
+.theme-toggle:hover {
+  border-color: var(--line-strong);
+  background: var(--surface-muted);
+  color: var(--text);
+}
+
+.theme-icon {
+  font-size: 14px;
+  line-height: 1;
+}
+
+/* =========================================================
+   Layout
+   ========================================================= */
+
+.layout {
+  width: min(1480px, calc(100% - 40px));
+  margin: 0 auto;
+
+  display: grid;
+  grid-template-columns: var(--sidebar-width) minmax(0, 1fr);
+  align-items: start;
+}
+
+/* =========================================================
+   Sidebar
+   ========================================================= */
+
+.sidebar {
+  position: sticky;
+  top: var(--header-height);
+
+  height: calc(100vh - var(--header-height));
+
+  padding: 28px 24px 40px 0;
+
+  overflow-y: auto;
+  scrollbar-width: thin;
+}
+
+.sidebar-nav {
+  padding-right: 12px;
+}
+
+.sidebar-group {
+  margin-bottom: 30px;
+}
+
+.sidebar-group-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  margin-bottom: 8px;
+  padding: 0 10px;
+
+  color: var(--muted);
+
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  line-height: 1.4;
+  text-transform: uppercase;
+}
+
+.sidebar-count {
+  min-width: 22px;
+
+  padding: 1px 6px;
+
+  border: 1px solid var(--line);
+  border-radius: 999px;
+
+  background: var(--surface-subtle);
+
+  color: var(--muted);
+
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0;
+  text-align: center;
+}
+
+.sidebar-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.sidebar-link {
+  position: relative;
+
+  display: flex;
+  align-items: center;
+
+  min-height: 31px;
+  padding: 5px 10px 5px 12px;
+
+  border-radius: var(--radius-sm);
+
+  color: var(--muted);
+
+  text-decoration: none;
+
+  transition:
+    color 120ms ease,
+    background 120ms ease;
+}
+
+.sidebar-link::before {
+  content: "";
+
+  position: absolute;
+  left: 0;
+  top: 7px;
+  bottom: 7px;
+
+  width: 2px;
+
+  border-radius: 2px;
+
+  background: transparent;
+
+  transition: background 120ms ease;
+}
+
+.sidebar-link:hover {
+  background: var(--surface-subtle);
+  color: var(--text);
+}
+
+.sidebar-link.is-active {
+  background: var(--surface-muted);
+  color: var(--text);
+  font-weight: 650;
+}
+
+.sidebar-link.is-active::before {
+  background: var(--link);
+}
+
+.sidebar-method-link,
+.sidebar-schema-link {
+  font-family:
+    "SFMono-Regular",
+    "Cascadia Code",
+    "Roboto Mono",
+    Consolas,
+    monospace;
+
+  font-size: 11.5px;
+  letter-spacing: -0.01em;
+}
+
+.sidebar-method-link span,
+.sidebar-schema-link span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* =========================================================
+   Main content
+   ========================================================= */
+
+.main {
+  min-width: 0;
+
+  border-left: 1px solid var(--line);
+
+  padding: 42px 0 100px 48px;
+}
+
+.content {
+  width: min(920px, 100%);
+}
+
+/* =========================================================
+   Intro
+   ========================================================= */
+
+.page-intro {
+  padding: 0 0 42px;
+
+  border-bottom: 1px solid var(--line);
+}
+
+.eyebrow {
+  margin-bottom: 8px;
+
+  color: var(--muted);
+
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.11em;
+  line-height: 1.4;
+  text-transform: uppercase;
+}
+
+.page-intro h1 {
+  margin: 0;
+
+  font-size: clamp(30px, 4vw, 42px);
+  font-weight: 700;
+  letter-spacing: -0.035em;
+  line-height: 1.12;
+}
+
+.page-intro p {
+  max-width: 720px;
+
+  margin: 16px 0 0;
+
+  color: var(--text-soft);
+
+  font-size: 15px;
+  line-height: 1.75;
+}
+
+.intro-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+
+  margin-top: 22px;
+}
+
+.intro-meta span {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+
+  padding: 5px 9px;
+
+  border: 1px solid var(--line);
+  border-radius: 999px;
+
+  background: var(--surface-subtle);
+
+  color: var(--muted);
+
+  font-size: 11px;
+}
+
+.intro-meta strong {
+  color: var(--text-soft);
+  font-weight: 650;
+}
+
+/* =========================================================
+   Content sections
+   ========================================================= */
+
+.content-section {
+  padding-top: 54px;
+}
+
+.content-section-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+
+  margin-bottom: 20px;
+}
+
+.content-section-header h2 {
+  margin: 0;
+
+  font-size: 23px;
+  font-weight: 700;
+  letter-spacing: -0.025em;
+  line-height: 1.2;
+}
+
+.section-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  min-width: 24px;
+  min-height: 22px;
+
+  padding: 2px 7px;
+
+  border: 1px solid var(--line);
+  border-radius: 999px;
+
+  background: var(--surface-subtle);
+
+  color: var(--muted);
+
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.section-count.large {
+  min-width: 30px;
+  min-height: 26px;
+
+  font-size: 11px;
+}
+
+/* =========================================================
+   Cards
+   ========================================================= */
+
+.method-list,
+.schema-list {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.method-card,
+.schema-card {
+  position: relative;
+
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+
+  background: var(--surface);
+
+  box-shadow: var(--shadow-card);
+
+  scroll-margin-top: calc(var(--header-height) + 24px);
+
+  transition:
+    border-color 180ms ease,
+    box-shadow 180ms ease,
+    background-color 160ms ease;
+}
+
+.method-card:hover,
+.schema-card:hover {
+  border-color: var(--line-strong);
+}
+
+.method-card.is-highlighted,
+.schema-card.is-highlighted {
+  border-color: var(--link);
+
+  box-shadow:
+    0 0 0 3px color-mix(
+      in srgb,
+      var(--link) 12%,
+      transparent
+    ),
+    var(--shadow-card);
+}
+
+/* =========================================================
+   Method cards
+   ========================================================= */
+
+.method-card-header,
+.schema-card-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+
+  gap: 20px;
+
+  padding: 22px 24px 20px;
+
+  border-bottom: 1px solid var(--line);
+}
+
+.method-heading {
+  min-width: 0;
+}
+
+.method-kind {
+  margin-bottom: 5px;
+
+  color: var(--muted);
+
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.method-title {
+  margin: 0;
+
+  color: var(--text);
+
+  font-family:
+    "SFMono-Regular",
+    "Cascadia Code",
+    "Roboto Mono",
+    Consolas,
+    monospace;
+
+  font-size: 17px;
+  font-weight: 650;
+  line-height: 1.4;
+
+  overflow-wrap: anywhere;
+}
+
+.method-description {
+  padding: 18px 24px;
+
+  border-bottom: 1px solid var(--line);
+
+  color: var(--text-soft);
+
+  font-size: 13px;
+  line-height: 1.7;
+}
+
+/* =========================================================
+   Method sections
+   ========================================================= */
+
+.method-sections {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+}
+
+.method-section {
+  min-width: 0;
+}
+
+.method-section + .method-section {
+  border-left: 1px solid var(--line);
+}
+
+.method-section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  min-height: 48px;
+  padding: 0 18px;
+
+  border-bottom: 1px solid var(--line);
+
+  background: var(--surface-subtle);
+}
+
+.method-section-title {
+  color: var(--text-soft);
+
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.parameter-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.method-parameter {
+  display: grid;
+  grid-template-columns: minmax(120px, 0.8fr) minmax(130px, 1fr);
+  column-gap: 18px;
+
+  padding: 14px 18px;
+
+  border-bottom: 1px solid var(--line);
+}
+
+.method-parameter:last-child {
+  border-bottom: 0;
+}
+
+.parameter-name {
+  min-width: 0;
+
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+}
+
+.parameter-name code,
+.result-name code {
+  color: var(--text);
+
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.parameter-type,
+.result-type {
+  min-width: 0;
+
+  color: var(--type);
+
+  font-family:
+    "SFMono-Regular",
+    "Cascadia Code",
+    "Roboto Mono",
+    Consolas,
+    monospace;
+
+  font-size: 11px;
+
+  overflow-wrap: anywhere;
+}
+
+.parameter-description {
+  grid-column: 1 / -1;
+
+  margin-top: 7px;
+
+  color: var(--muted);
+
+  font-size: 11px;
+  line-height: 1.55;
+}
+
+.result-row {
+  display: grid;
+  grid-template-columns: minmax(120px, 0.8fr) minmax(130px, 1fr);
+  gap: 18px;
+
+  padding: 14px 18px;
+}
+
+.result-description {
+  grid-column: 1 / -1;
+
+  color: var(--muted);
+
+  font-size: 11px;
+  line-height: 1.55;
+}
+
+.empty-state {
+  padding: 18px;
+
+  color: var(--muted);
+
+  font-size: 12px;
+}
+
+/* =========================================================
+   Schema cards
+   ========================================================= */
+
+.schema-card-header {
+  align-items: center;
+}
+
+.schema-title {
+  margin: 0;
+
+  color: var(--text);
+
+  font-family:
+    "SFMono-Regular",
+    "Cascadia Code",
+    "Roboto Mono",
+    Consolas,
+    monospace;
+
+  font-size: 18px;
+  font-weight: 650;
+  line-height: 1.4;
+}
+
+.schema-description {
+  max-width: 700px;
+
+  margin: 9px 0 0;
+
+  color: var(--muted);
+
+  font-size: 12px;
+  line-height: 1.65;
+}
+
+.schema-type-badge {
+  flex: 0 0 auto;
+
+  padding: 4px 8px;
+
+  border: 1px solid color-mix(
+    in srgb,
+    var(--type) 25%,
+    var(--line)
+  );
+
+  border-radius: 4px;
+
+  background: var(--type-bg);
+
+  color: var(--type);
+
+  font-family:
+    "SFMono-Regular",
+    "Cascadia Code",
+    "Roboto Mono",
+    Consolas,
+    monospace;
+
+  font-size: 10px;
+  font-weight: 650;
+}
+
+.schema-properties {
+  padding: 0 24px 24px;
+}
+
+.schema-properties > .section-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  padding: 20px 0 12px;
+
+  color: var(--text-soft);
+
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.schema-body {
+  padding: 22px 24px;
+}
+
+/* =========================================================
+   Properties
+   ========================================================= */
+
+.property-list {
+  overflow: hidden;
+
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+}
+
+.property {
+  position: relative;
+
+  background: var(--surface);
+}
+
+.property + .property {
+  border-top: 1px solid var(--line);
+}
+
+.property-main {
+  display: flex;
+  align-items: stretch;
+
+  min-height: 50px;
+}
+
+.property-toggle,
+.property-toggle-spacer {
+  flex: 0 0 42px;
+
+  position: relative;
+
+  display: grid;
+  place-items: center;
+
+  border: 0;
+  border-right: 1px solid var(--line);
+
+  background: var(--surface-subtle);
+}
+
+.property-toggle {
+  cursor: pointer;
+}
+
+.property-toggle:hover {
+  background: var(--surface-muted);
+}
+
+.chevron {
+  width: 6px;
+  height: 6px;
+
+  border-right: 1.5px solid var(--muted);
+  border-bottom: 1.5px solid var(--muted);
+
+  transform: rotate(-45deg);
+
+  transition: transform 120ms ease;
+}
+
+.property.is-open > .property-main .chevron {
+  transform: rotate(45deg);
+}
+
+.property-content {
+  flex: 1;
+  min-width: 0;
+
+  padding: 10px 14px;
+}
+
+.property-header {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 7px 8px;
+}
+
+.property-name {
+  color: var(--text);
+
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.property-type {
+  margin-left: auto;
+
+  color: var(--type);
+
+  font-family:
+    "SFMono-Regular",
+    "Cascadia Code",
+    "Roboto Mono",
+    Consolas,
+    monospace;
+
+  font-size: 11px;
+  font-weight: 500;
+
+  overflow-wrap: anywhere;
+}
+
+.property-type .type-link,
+.parameter-type .type-link,
+.result-type .type-link {
+  color: var(--ref);
+}
+
+.description {
+  margin-top: 4px;
+
+  color: var(--muted);
+
+  font-size: 11px;
+  line-height: 1.55;
+}
+
+.required-badge {
+  display: inline-flex;
+  align-items: center;
+
+  padding: 1px 5px;
+
+  border-radius: 3px;
+
+  background: var(--required-bg);
+  color: var(--required);
+
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+.property-children {
+  position: relative;
+
+  margin-left: 42px;
+
+  border-top: 1px solid var(--line);
+  padding: 14px 14px 14px 22px;
+
+  background: var(--surface-subtle);
+}
+
+.nested-properties {
+  position: relative;
+
+  margin-left: 8px;
+
+  border-left: 1px solid var(--line-strong);
+  padding-left: 14px;
+}
+
+.nested-properties > .property {
+  position: relative;
+
+  border: 1px solid var(--line);
+  border-radius: 4px;
+}
+
+.nested-properties > .property + .property {
+  margin-top: 7px;
+}
+
+.nested-properties > .property::before {
+  content: "";
+
+  position: absolute;
+  left: -15px;
+  top: 24px;
+
+  width: 14px;
+
+  border-top: 1px solid var(--line-strong);
+}
+
+/* =========================================================
+   Arrays
+   ========================================================= */
+
+.array-detail {
+  margin-top: 12px;
+
+  border: 1px solid var(--line);
+  border-radius: 4px;
+
+  background: var(--surface);
+
+  overflow: hidden;
+}
+
+.array-detail-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 12px;
+
+  padding: 9px 12px;
+
+  border-bottom: 1px solid var(--line);
+
+  background: var(--surface-subtle);
+}
+
+.detail-label {
+  color: var(--muted);
+
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.array-signature {
+  color: var(--type);
+
+  font-family:
+    "SFMono-Regular",
+    "Cascadia Code",
+    "Roboto Mono",
+    Consolas,
+    monospace;
+
+  font-size: 10px;
+}
+
+.array-reference {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+
+  padding: 9px 12px;
+
+  border-bottom: 1px solid var(--line);
+}
+
+.array-reference .detail-label {
+  flex: 0 0 auto;
+}
+
+.array-reference .type-link {
+  font-size: 11px;
+}
+
+.array-detail > .nested-properties {
+  margin: 12px;
+}
+
+.array-detail > .enum-block {
+  margin: 12px;
+}
+
+/* =========================================================
+   Types / references
+   ========================================================= */
+
+.type-value {
+  color: var(--type);
+}
+
+.type-link {
+  display: inline;
+
+  color: var(--ref);
+
+  font-family:
+    "SFMono-Regular",
+    "Cascadia Code",
+    "Roboto Mono",
+    Consolas,
+    monospace;
+
+  font-size: inherit;
+  font-weight: 550;
+
+  text-decoration: none;
+
+  border-bottom: 1px dashed color-mix(
+    in srgb,
+    var(--ref) 40%,
+    transparent
+  );
+}
+
+.type-link:hover {
+  color: var(--link-hover);
+  border-bottom-color: currentColor;
+}
+
+.type-link-muted {
+  color: var(--muted);
+
+  border-bottom-style: dotted;
+}
+
+/* =========================================================
+   Enums
+   ========================================================= */
+
+.enum-block {
+  margin-top: 12px;
+  padding: 12px;
+
+  border: 1px solid var(--line);
+  border-radius: 4px;
+
+  background: var(--surface-subtle);
+}
+
+.enum-values {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+
+  margin-top: 7px;
+}
+
+.enum-values code {
+  padding: 3px 6px;
+
+  border: 1px solid var(--line);
+  border-radius: 3px;
+
+  background: var(--surface);
+
+  color: var(--text-soft);
+
+  font-size: 10px;
+}
+
+/* =========================================================
+   Errors
+   ========================================================= */
+
+.error-card {
+  padding: 28px;
+
+  border: 1px solid var(--required);
+  border-radius: var(--radius-lg);
+
+  background: var(--required-bg);
+}
+
+.error-card h2 {
+  margin: 0 0 8px;
+
+  color: var(--required);
+
+  font-size: 18px;
+}
+
+.error-card p {
+  margin: 0;
+
+  color: var(--text-soft);
+}
+
+/* =========================================================
+   Responsive
+   ========================================================= */
+
+@media (max-width: 1000px) {
+  :root {
+    --sidebar-width: 240px;
+  }
+
+  .main {
+    padding-left: 32px;
+  }
+
+  .method-sections {
+    grid-template-columns: 1fr;
+  }
+
+  .method-section + .method-section {
+    border-top: 1px solid var(--line);
+    border-left: 0;
+  }
+}
+
+@media (max-width: 760px) {
+  :root {
+    --header-height: 58px;
+  }
+
+  .header-inner,
+  .layout {
+    width: calc(100% - 28px);
+  }
+
+  .header-label {
+    display: none;
+  }
+
+  .theme-label {
+    display: none;
+  }
+
+  .theme-toggle {
+    width: 30px;
+    padding: 0;
+
+    justify-content: center;
+  }
+
+  .layout {
+    display: block;
+  }
+
+  .sidebar {
+    position: relative;
+    top: auto;
+
+    height: auto;
+
+    padding: 14px 0;
+
+    border-bottom: 1px solid var(--line);
+
+    overflow: visible;
+  }
+
+  .sidebar-nav {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 18px;
+
+    padding-right: 0;
+  }
+
+  .sidebar-group {
+    min-width: 0;
+    margin-bottom: 0;
+  }
+
+  .sidebar-list {
+    max-height: 220px;
+    overflow-y: auto;
+  }
+
+  .main {
+    border-left: 0;
+
+    padding: 34px 0 80px;
+  }
+
+  .content {
+    width: 100%;
+  }
+
+  .page-intro {
+    padding-bottom: 32px;
+  }
+
+  .content-section {
+    padding-top: 40px;
+  }
+
+  .method-card-header,
+  .schema-card-header {
+    padding: 18px;
+  }
+
+  .method-description {
+    padding: 15px 18px;
+  }
+
+  .schema-properties {
+    padding: 0 18px 18px;
+  }
+
+  .schema-body {
+    padding: 18px;
+  }
+
+  .method-parameter,
+  .result-row {
+    grid-template-columns: 1fr;
+    gap: 6px;
+  }
+
+  .parameter-description,
+  .result-description {
+    grid-column: auto;
+  }
+
+  .property-type {
+    margin-left: 0;
+    width: 100%;
+  }
+}
+
+@media (max-width: 520px) {
+  .header-inner,
+  .layout {
+    width: calc(100% - 20px);
+  }
+
+  .sidebar-nav {
+    grid-template-columns: 1fr;
+  }
+
+  .sidebar-list {
+    max-height: 180px;
+  }
+
+  .content-section-header {
+    align-items: center;
+  }
+
+  .method-card,
+  .schema-card {
+    border-radius: 6px;
+  }
+
+  .method-title,
+  .schema-title {
+    font-size: 15px;
+  }
+
+  .schema-type-badge {
+    display: none;
+  }
+
+  .property-toggle,
+  .property-toggle-spacer {
+    flex-basis: 36px;
+  }
+
+  .property-children {
+    margin-left: 36px;
+    padding-left: 12px;
+  }
+
+  .nested-properties {
+    margin-left: 5px;
+    padding-left: 10px;
+  }
+
+  .nested-properties > .property::before {
+    left: -11px;
+    width: 10px;
+  }
+
+  .array-detail-header {
+    align-items: flex-start;
+    flex-direction: column;
+  }
 }

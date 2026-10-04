@@ -18,7 +18,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: 'Checkout repository'
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: 'Get manifest information'
         id: 'manifest'
@@ -54,7 +54,7 @@ jobs:
           echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
 
       - name: 'Upload json-rpc-api-schema.json as artifact'
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: 'json-rpc-api-schema'
           path: './schema.json'
@@ -70,13 +70,13 @@ jobs:
 
     steps:
       - name: 'Checkout repository'
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         
       - name: 'Setup Deno'
         uses: denoland/setup-deno@v2
         
       - name: 'Download schema artifact'
-        uses: actions/download-artifact@v7.0.0
+        uses: actions/download-artifact@v7
         with:
           name: 'json-rpc-api-schema'
           path: 'src'
@@ -97,9 +97,9 @@ jobs:
           cp -r src/schema.json pages/schema.json
 
       - name: 'Upload pages artifact'
-        uses: actions/upload-pages-artifact@v3
+        uses: actions/upload-pages-artifact@v5
         with:
           path: 'pages'
 
       - name: 'Deploy to GitHub Pages'
-        uses: actions/deploy-pages@v4
+        uses: actions/deploy-pages@v5

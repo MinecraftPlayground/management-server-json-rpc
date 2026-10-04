@@ -1,18 +1,44 @@
-<!DOCTYPE html>
-<html lang="en">
+<!doctype html>
+<html lang="de">
   <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="theme-color" content="#000000" />
-    <meta
-      name="description"
-      content="JSON RPC"
-    />
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="OpenRPC API reference">
 
-    <title>JSON RPC</title>
-    <script type="module" src="./index.tsx" defer></script>
+    <title>OpenRPC API Reference</title>
+    <script type="module" src="index.js" defer></script>
   </head>
+
   <body>
-    <div id="root"></div>
+    <header class="site-header">
+      <div class="header-inner">
+        <a class="brand" href="#" aria-label="API Reference">
+          <span class="brand-mark">API</span>
+          <span class="brand-text">
+            <span id="title">OpenRPC API Reference</span>
+            <span class="subtitle" id="subtitle">Loading ...</span>
+          </span>
+        </a>
+
+        <div class="header-actions">
+          <span class="header-label">JSON-RPC</span>
+          <button
+            id="theme-toggle"
+            class="theme-toggle"
+            type="button"
+            aria-label="Switch to dark mode"
+            title="Switch to dark mode"
+          >
+            <span class="theme-icon" aria-hidden="true">◐</span>
+            <span class="theme-label">Dark</span>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <div class="layout">
+      <aside id="sidebar" class="sidebar"></aside>
+      <main id="app" class="main"></main>
+    </div>
   </body>
 </html>
