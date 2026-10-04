@@ -55,19 +55,11 @@ function refName(ref) {
 }
 
 function typeOf(schema) {
-  if (!schema) {
-    return "unknown";
-  }
-
-  if (schema.$ref) {
-    return refName(schema.$ref);
-  }
+  if (!schema) return "unknown";
+  if (schema.$ref) return refName(schema.$ref);
 
   if (schema.type === "array") {
-    if (!schema.items) {
-      return "array";
-    }
-
+    if (!schema.items) return "array";
     return `array<${typeOf(schema.items)}>`;
   }
 
@@ -75,17 +67,9 @@ function typeOf(schema) {
     return schema.type.join(" | ");
   }
 
-  if (schema.enum) {
-    return "enum";
-  }
-
-  if (schema.type) {
-    return schema.type;
-  }
-
-  if (schema.properties) {
-    return "object";
-  }
+  if (schema.enum) return "enum";
+  if (schema.type) return schema.type;
+  if (schema.properties) return "object";
 
   return "unknown";
 }
@@ -98,8 +82,10 @@ function isExpandable(schema) {
 }
 
 function isRequired(parentSchema, name) {
-  return Array.isArray(parentSchema?.required)
-    && parentSchema.required.includes(name);
+  return (
+    Array.isArray(parentSchema?.required) &&
+    parentSchema.required.includes(name)
+  );
 }
 
 function findSchema(name) {
@@ -109,9 +95,7 @@ function findSchema(name) {
 function refLink(ref, className = "") {
   const name = refName(ref);
 
-  if (!name) {
-    return "";
-  }
+  if (!name) return "";
 
   const exists = Boolean(findSchema(name));
 
@@ -169,14 +153,16 @@ function typeHtml(schema) {
 }
 
 function enumHtml(schema) {
-  if (!Array.isArray(schema?.enum) || schema.enum.length === 0) {
+  if (
+    !Array.isArray(schema?.enum) ||
+    schema.enum.length === 0
+  ) {
     return "";
   }
 
   return `
     <div class="enum-block">
       <div class="detail-label">Allowed values</div>
-
       <div class="enum-values">
         ${schema.enum
           .map((value) => `<code>${esc(value)}</code>`)
@@ -187,9 +173,7 @@ function enumHtml(schema) {
 }
 
 function descriptionHtml(description) {
-  if (!description) {
-    return "";
-  }
+  if (!description) return "";
 
   return `
     <div class="description">
@@ -199,7 +183,10 @@ function descriptionHtml(description) {
 }
 
 function renderArrayDetails(schema) {
-  if (schema?.type !== "array" || !schema.items) {
+  if (
+    schema?.type !== "array" ||
+    !schema.items
+  ) {
     return "";
   }
 
@@ -209,7 +196,6 @@ function renderArrayDetails(schema) {
     <div class="array-detail">
       <div class="array-detail-header">
         <span class="detail-label">Array items</span>
-
         <span class="array-signature">
           array&lt;${typeHtml(item)}&gt;
         </span>
@@ -250,12 +236,18 @@ function renderArrayDetails(schema) {
   `;
 }
 
-function renderProperty(name, schema, required = false, nested = false) {
+function renderProperty(
+  name,
+  schema,
+  required = false,
+  nested = false
+) {
   const expandable = isExpandable(schema);
 
-  const propertyId = `${nested ? "nested" : "property"}-${slug(name)}-${Math.random()
-    .toString(36)
-    .slice(2, 8)}`;
+  const propertyId =
+    `${nested ? "nested" : "property"}-` +
+    `${slug(name)}-` +
+    `${Math.random().toString(36).slice(2, 8)}`;
 
   return `
     <div
@@ -282,7 +274,9 @@ function renderProperty(name, schema, required = false, nested = false) {
 
         <div class="property-content">
           <div class="property-header">
-            <code class="property-name">${esc(name)}</code>
+            <code class="property-name">
+              ${esc(name)}
+            </code>
 
             ${
               required
@@ -337,7 +331,9 @@ function renderProperty(name, schema, required = false, nested = false) {
 }
 
 function renderSchema(name, schema) {
-  const properties = Object.entries(schema?.properties ?? {});
+  const properties = Object.entries(
+    schema?.properties ?? {}
+  );
 
   return `
     <section
@@ -375,7 +371,9 @@ function renderSchema(name, schema) {
             <div class="schema-properties">
               <div class="section-heading">
                 <span>Properties</span>
-                <span class="section-count">${properties.length}</span>
+                <span class="section-count">
+                  ${properties.length}
+                </span>
               </div>
 
               <div class="property-list">
@@ -407,7 +405,11 @@ function renderSchema(name, schema) {
   `;
 }
 
-function renderParameter(name, schema, required = false) {
+function renderParameter(
+  name,
+  schema,
+  required = false
+) {
   return `
     <div class="method-parameter">
       <div class="parameter-name">
@@ -438,7 +440,9 @@ function renderParameter(name, schema, required = false) {
 }
 
 function renderMethod(method) {
-  const name = method.name ?? "Unnamed method";
+  const name =
+    method.name ?? "Unnamed method";
+
   const params = method.params ?? [];
   const result = method.result;
 
@@ -515,7 +519,9 @@ function renderMethod(method) {
               ? `
                 <div class="result-row">
                   <div class="result-name">
-                    <code>${esc(result.name ?? "result")}</code>
+                    <code>
+                      ${esc(result.name ?? "result")}
+                    </code>
                   </div>
 
                   <div class="result-type">
@@ -547,23 +553,64 @@ function renderMethod(method) {
 
 function renderSidebar() {
   sidebar.innerHTML = `
-    <nav class="sidebar-nav" aria-label="API navigation">
-      <div class="sidebar-group">
+    <nav
+      class="sidebar-nav"
+      aria-label="API navigation"
+    >
+      <div class="sidebar-search">
+        <label
+          class="search-box"
+          for="sidebar-search-input"
+        >
+          <span
+            class="search-icon"
+            aria-hidden="true"
+          ></span>
+
+          <input
+            id="sidebar-search-input"
+            class="sidebar-search-input"
+            type="search"
+            placeholder="Search methods & schemas…"
+            autocomplete="off"
+            spellcheck="false"
+          />
+
+          <kbd class="search-shortcut">/</kbd>
+        </label>
+
+        <div
+          class="search-results-count"
+          id="search-results-count"
+        ></div>
+      </div>
+
+      <div
+        class="sidebar-group"
+        data-sidebar-group="methods"
+      >
         <div class="sidebar-group-header">
           <span>METHODS</span>
-          <span class="sidebar-count">${methods.length}</span>
+          <span class="sidebar-count">
+            ${methods.length}
+          </span>
         </div>
 
         <div class="sidebar-list">
           ${methods
             .map((method) => {
-              const name = method.name ?? "Unnamed method";
+              const name =
+                method.name ?? "Unnamed method";
 
               return `
                 <a
                   class="sidebar-link sidebar-method-link"
                   href="#${methodId(name)}"
                   data-target="${methodId(name)}"
+                  data-search-name="${esc(name)}"
+                  data-search-description="${esc(
+                    method.description ?? ""
+                  )}"
                 >
                   <span>${esc(name)}</span>
                 </a>
@@ -573,41 +620,80 @@ function renderSidebar() {
         </div>
       </div>
 
-      <div class="sidebar-group">
+      <div
+        class="sidebar-group"
+        data-sidebar-group="schemas"
+      >
         <div class="sidebar-group-header">
           <span>COMPONENTS / SCHEMAS</span>
-          <span class="sidebar-count">${schemaEntries.length}</span>
+
+          <span class="sidebar-count">
+            ${schemaEntries.length}
+          </span>
         </div>
 
         <div class="sidebar-list">
           ${schemaEntries
-            .map(([name]) => `
-              <a
-                class="sidebar-link sidebar-schema-link"
-                href="#${schemaId(name)}"
-                data-target="${schemaId(name)}"
-              >
-                <span>${esc(name)}</span>
-              </a>
-            `)
+            .map(
+              ([name, schema]) => `
+                <a
+                  class="sidebar-link sidebar-schema-link"
+                  href="#${schemaId(name)}"
+                  data-target="${schemaId(name)}"
+                  data-search-name="${esc(name)}"
+                  data-search-description="${esc(
+                    schema.description ?? ""
+                  )}"
+                >
+                  <span>${esc(name)}</span>
+                </a>
+              `
+            )
             .join("")}
+        </div>
+      </div>
+
+      <div
+        class="sidebar-search-empty"
+        id="sidebar-search-empty"
+        hidden
+      >
+        <div class="search-empty-title">
+          No results
+        </div>
+
+        <div class="search-empty-description">
+          Try another method or schema name.
         </div>
       </div>
     </nav>
   `;
+
+  setupSidebarSearch();
 }
 
 function renderMain() {
   app.innerHTML = `
     <div class="content">
       <div class="page-intro">
-        <div class="eyebrow">OPENRPC API REFERENCE</div>
+        <div class="eyebrow">
+          OPENRPC API REFERENCE
+        </div>
 
-        <h1>${esc(schema.info?.title ?? "API Reference")}</h1>
+        <h1>
+          ${esc(
+            schema.info?.title ??
+              "API Reference"
+          )}
+        </h1>
 
         ${
           schema.info?.description
-            ? `<p>${esc(schema.info.description)}</p>`
+            ? `
+              <p>
+                ${esc(schema.info.description)}
+              </p>
+            `
             : ""
         }
 
@@ -635,10 +721,16 @@ function renderMain() {
         </div>
       </div>
 
-      <section class="content-section" id="methods">
+      <section
+        class="content-section"
+        id="methods"
+      >
         <div class="content-section-header">
           <div>
-            <div class="eyebrow">REFERENCE</div>
+            <div class="eyebrow">
+              REFERENCE
+            </div>
+
             <h2>Methods</h2>
           </div>
 
@@ -652,10 +744,16 @@ function renderMain() {
         </div>
       </section>
 
-      <section class="content-section" id="schemas">
+      <section
+        class="content-section"
+        id="schemas"
+      >
         <div class="content-section-header">
           <div>
-            <div class="eyebrow">REFERENCE</div>
+            <div class="eyebrow">
+              REFERENCE
+            </div>
+
             <h2>Components / Schemas</h2>
           </div>
 
@@ -666,7 +764,9 @@ function renderMain() {
 
         <div class="schema-list">
           ${schemaEntries
-            .map(([name, schema]) => renderSchema(name, schema))
+            .map(([name, schema]) =>
+              renderSchema(name, schema)
+            )
             .join("")}
         </div>
       </section>
@@ -674,31 +774,164 @@ function renderMain() {
   `;
 }
 
-function setupExpandableProperties() {
-  document.querySelectorAll(".property-toggle").forEach((button) => {
-    button.addEventListener("click", () => {
-      const targetId = button.getAttribute("aria-controls");
-      const target = document.getElementById(targetId);
+function setupSidebarSearch() {
+  const input = document.querySelector(
+    "#sidebar-search-input"
+  );
 
-      if (!target) {
-        return;
+  const count = document.querySelector(
+    "#search-results-count"
+  );
+
+  const empty = document.querySelector(
+    "#sidebar-search-empty"
+  );
+
+  if (!input) return;
+
+  const links = [
+    ...document.querySelectorAll(".sidebar-link")
+  ];
+
+  const groups = [
+    ...document.querySelectorAll(".sidebar-group")
+  ];
+
+  function updateSearch() {
+    const query = input.value
+      .trim()
+      .toLowerCase();
+
+    let visibleCount = 0;
+
+    links.forEach((link) => {
+      const name = (
+        link.dataset.searchName ?? ""
+      ).toLowerCase();
+
+      const description = (
+        link.dataset.searchDescription ?? ""
+      ).toLowerCase();
+
+      const matches =
+        !query ||
+        name.includes(query) ||
+        description.includes(query);
+
+      link.style.display = matches
+        ? ""
+        : "none";
+
+      if (matches) {
+        visibleCount++;
       }
+    });
 
-      const expanded =
-        button.getAttribute("aria-expanded") === "true";
-
-      button.setAttribute(
-        "aria-expanded",
-        String(!expanded)
+    groups.forEach((group) => {
+      const visibleLinks = [
+        ...group.querySelectorAll(".sidebar-link")
+      ].filter(
+        (link) => link.style.display !== "none"
       );
 
-      target.hidden = expanded;
-
-      button
-        .closest(".property")
-        ?.classList.toggle("is-open", !expanded);
+      group.style.display =
+        visibleLinks.length > 0
+          ? ""
+          : "none";
     });
-  });
+
+    empty.style.display =
+      query && visibleCount === 0
+        ? ""
+        : "none";
+
+    if (!query) {
+      count.textContent = "";
+    } else {
+      count.textContent =
+        visibleCount === 1
+          ? "1 result"
+          : `${visibleCount} results`;
+    }
+  }
+
+  input.addEventListener(
+    "input",
+    updateSearch
+  );
+
+  input.addEventListener(
+    "keydown",
+    (event) => {
+      if (event.key === "Escape") {
+        input.value = "";
+        updateSearch();
+        input.blur();
+      }
+    }
+  );
+
+  document.addEventListener(
+    "keydown",
+    (event) => {
+      if (
+        event.key === "/" &&
+        !event.ctrlKey &&
+        !event.metaKey &&
+        !event.altKey &&
+        document.activeElement !== input &&
+        ![
+          "INPUT",
+          "TEXTAREA",
+          "SELECT"
+        ].includes(
+          document.activeElement?.tagName
+        )
+      ) {
+        event.preventDefault();
+
+        input.focus();
+        input.select();
+      }
+    }
+  );
+}
+
+function setupExpandableProperties() {
+  document
+    .querySelectorAll(".property-toggle")
+    .forEach((button) => {
+      button.addEventListener(
+        "click",
+        () => {
+          const targetId =
+            button.getAttribute("aria-controls");
+
+          const target =
+            document.getElementById(targetId);
+
+          if (!target) return;
+
+          const expanded =
+            button.getAttribute("aria-expanded") ===
+            "true";
+
+          button.setAttribute(
+            "aria-expanded",
+            String(!expanded)
+          );
+
+          target.hidden = expanded;
+
+          button
+            .closest(".property")
+            ?.classList.toggle(
+              "is-open",
+              !expanded
+            );
+        }
+      );
+    });
 }
 
 function setHash(id, replace = false) {
@@ -728,57 +961,74 @@ function getScrollTargetPosition(target) {
   );
 }
 
-function scrollToTarget(target, behavior = "smooth") {
-  if (!target) {
-    return;
-  }
+function scrollToTarget(
+  target,
+  behavior = "smooth"
+) {
+  if (!target) return;
 
   isProgrammaticScroll = true;
 
   if (programmaticScrollTimer) {
-    globalThis.clearTimeout(programmaticScrollTimer);
+    globalThis.clearTimeout(
+      programmaticScrollTimer
+    );
   }
 
-  const position = getScrollTargetPosition(target);
+  const position =
+    getScrollTargetPosition(target);
 
   globalThis.scrollTo({
     top: position,
     behavior
   });
 
-  /*
-   * Der Scrollspy darf während eines bewusst ausgelösten
-   * Klicks nicht sofort einen anderen Eintrag auswählen.
-   */
-  programmaticScrollTimer = globalThis.setTimeout(() => {
-    isProgrammaticScroll = false;
-    requestScrollSpyUpdate();
-  }, behavior === "smooth" ? 700 : 50);
+  programmaticScrollTimer =
+    globalThis.setTimeout(
+      () => {
+        isProgrammaticScroll = false;
+        requestScrollSpyUpdate();
+      },
+      behavior === "smooth" ? 700 : 50
+    );
 }
 
 function setupRefLinks() {
-  document.querySelectorAll("[data-ref]").forEach((link) => {
-    link.addEventListener("click", (event) => {
-      const name = link.dataset.ref;
-      const target = document.getElementById(schemaId(name));
+  document
+    .querySelectorAll("[data-ref]")
+    .forEach((link) => {
+      link.addEventListener(
+        "click",
+        (event) => {
+          const name = link.dataset.ref;
 
-      if (!target) {
-        return;
-      }
+          const target =
+            document.getElementById(
+              schemaId(name)
+            );
 
-      event.preventDefault();
+          if (!target) return;
 
-      setHash(target.id);
-      setActiveSidebarItem(target.id);
-      scrollToTarget(target);
+          event.preventDefault();
 
-      target.classList.add("is-highlighted");
+          setHash(target.id);
+          setActiveSidebarItem(target.id);
+          scrollToTarget(target);
 
-      globalThis.setTimeout(() => {
-        target.classList.remove("is-highlighted");
-      }, 1200);
+          target.classList.add(
+            "is-highlighted"
+          );
+
+          globalThis.setTimeout(
+            () =>
+              target.classList.remove(
+                "is-highlighted"
+              ),
+            1200
+          );
+        }
+      );
     });
-  });
 }
 
 function updateScrollSpy() {
@@ -794,15 +1044,13 @@ function updateScrollSpy() {
   const headerHeight =
     document.querySelector(".site-header")?.offsetHeight ?? 0;
 
-  /*
-   * Der Aktivierungspunkt liegt knapp unterhalb des Headers.
-   */
   const activationLine =
     globalThis.scrollY +
     headerHeight +
     32;
 
-  let current = scrollSpyTargets[0];
+  let current =
+    scrollSpyTargets[0];
 
   for (const target of scrollSpyTargets) {
     const absoluteTop =
@@ -816,9 +1064,7 @@ function updateScrollSpy() {
     }
   }
 
-  if (!current) {
-    return;
-  }
+  if (!current) return;
 
   if (current.id !== activeSectionId) {
     setActiveSidebarItem(current.id);
@@ -833,12 +1079,9 @@ function updateScrollSpy() {
 }
 
 function requestScrollSpyUpdate() {
-  if (scrollSpyTicking) {
-    return;
-  }
+  if (scrollSpyTicking) return;
 
   scrollSpyTicking = true;
-
   globalThis.requestAnimationFrame(
     updateScrollSpy
   );
@@ -847,16 +1090,21 @@ function requestScrollSpyUpdate() {
 function setActiveSidebarItem(targetId) {
   activeSectionId = targetId;
 
-  document.querySelectorAll(".sidebar-link").forEach((link) => {
-    link.classList.toggle(
-      "is-active",
-      link.dataset.target === targetId
-    );
-  });
+  document
+    .querySelectorAll(".sidebar-link")
+    .forEach((link) => {
+      link.classList.toggle(
+        "is-active",
+        link.dataset.target === targetId
+      );
+    });
 
-  const activeLink = document.querySelector(
-    `.sidebar-link[data-target="${CSS.escape(targetId)}"]`
-  );
+  const activeLink =
+    document.querySelector(
+      `.sidebar-link[data-target="${CSS.escape(
+        targetId
+      )}"]`
+    );
 
   if (activeLink) {
     activeLink.scrollIntoView({
@@ -872,10 +1120,11 @@ function setupScrollSpy() {
         methodId(method.name)
       )
     ),
-    ...schemaEntries.map(([name]) =>
-      document.getElementById(
-        schemaId(name)
-      )
+    ...schemaEntries.map(
+      ([name]) =>
+        document.getElementById(
+          schemaId(name)
+        )
     )
   ].filter(Boolean);
 
@@ -895,45 +1144,41 @@ function setupScrollSpy() {
 }
 
 function setupSidebarLinks() {
-  document.querySelectorAll(".sidebar-link").forEach((link) => {
-    link.addEventListener("click", (event) => {
-      const targetId = link.dataset.target;
-      const target = document.getElementById(targetId);
+  document
+    .querySelectorAll(".sidebar-link")
+    .forEach((link) => {
+      link.addEventListener(
+        "click",
+        (event) => {
+          const targetId =
+            link.dataset.target;
 
-      if (!target) {
-        return;
-      }
+          const target =
+            document.getElementById(targetId);
 
-      event.preventDefault();
+          if (!target) return;
 
-      /*
-       * URL sofort setzen.
-       */
-      setHash(targetId);
+          event.preventDefault();
 
-      /*
-       * Auswahl sofort aktualisieren.
-       */
-      setActiveSidebarItem(targetId);
-
-      /*
-       * Explizite Positionierung statt scrollIntoView().
-       * Dadurch bleibt der Sticky Header berücksichtigt.
-       */
-      scrollToTarget(target);
+          setHash(targetId);
+          setActiveSidebarItem(targetId);
+          scrollToTarget(target);
+        }
+      );
     });
-  });
 }
 
 function scrollToInitialHash() {
-  const hash = globalThis.location.hash.slice(1);
+  const hash =
+    globalThis.location.hash.slice(1);
 
   if (!hash) {
     requestScrollSpyUpdate();
     return;
   }
 
-  const target = document.getElementById(hash);
+  const target =
+    document.getElementById(hash);
 
   if (!target) {
     requestScrollSpyUpdate();
@@ -955,27 +1200,30 @@ function scrollToInitialHash() {
 }
 
 function setupHashNavigation() {
-  globalThis.addEventListener("hashchange", () => {
-    const hash = globalThis.location.hash.slice(1);
+  globalThis.addEventListener(
+    "hashchange",
+    () => {
+      const hash =
+        globalThis.location.hash.slice(1);
 
-    if (!hash) {
-      return;
+      if (!hash) return;
+
+      const target =
+        document.getElementById(hash);
+
+      if (!target) return;
+
+      setActiveSidebarItem(hash);
+      scrollToTarget(target);
     }
-
-    const target = document.getElementById(hash);
-
-    if (!target) {
-      return;
-    }
-
-    setActiveSidebarItem(hash);
-    scrollToTarget(target);
-  });
+  );
 }
 
 function getPreferredTheme() {
   const stored =
-    localStorage.getItem("api-reference-theme");
+    localStorage.getItem(
+      "api-reference-theme"
+    );
 
   if (
     stored === "light" ||
@@ -992,12 +1240,11 @@ function getPreferredTheme() {
 }
 
 function updateThemeButton() {
-  if (!themeToggle) {
-    return;
-  }
+  if (!themeToggle) return;
 
   const dark =
-    document.documentElement.dataset.theme === "dark";
+    document.documentElement.dataset.theme ===
+    "dark";
 
   themeToggle.setAttribute(
     "aria-label",
@@ -1015,50 +1262,54 @@ function updateThemeButton() {
 
   themeToggle.innerHTML = dark
     ? `
-      <span class="theme-icon theme-icon-sun" aria-hidden="true">
-        ☼
-      </span>
+      <span
+        class="theme-icon theme-icon-sun"
+        aria-hidden="true"
+      >☼</span>
       <span class="theme-label">Light</span>
     `
     : `
-      <span class="theme-icon theme-icon-moon" aria-hidden="true">
-        ◐
-      </span>
+      <span
+        class="theme-icon theme-icon-moon"
+        aria-hidden="true"
+      >◐</span>
       <span class="theme-label">Dark</span>
     `;
 }
 
 function setupTheme() {
-  const theme = getPreferredTheme();
+  const theme =
+    getPreferredTheme();
 
   document.documentElement.dataset.theme =
     theme;
 
   updateThemeButton();
 
-  if (!themeToggle) {
-    return;
-  }
+  if (!themeToggle) return;
 
-  themeToggle.addEventListener("click", () => {
-    const current =
-      document.documentElement.dataset.theme;
+  themeToggle.addEventListener(
+    "click",
+    () => {
+      const current =
+        document.documentElement.dataset.theme;
 
-    const next =
-      current === "dark"
-        ? "light"
-        : "dark";
+      const next =
+        current === "dark"
+          ? "light"
+          : "dark";
 
-    document.documentElement.dataset.theme =
-      next;
+      document.documentElement.dataset.theme =
+        next;
 
-    localStorage.setItem(
-      "api-reference-theme",
-      next
-    );
+      localStorage.setItem(
+        "api-reference-theme",
+        next
+      );
 
-    updateThemeButton();
-  });
+      updateThemeButton();
+    }
+  );
 }
 
 function initialize() {
